@@ -11,7 +11,9 @@
     "clean": "rimraf dist && rimraf tsconfig.dev.tsbuildinfo",
     "dev": "tsc-watch -p tsconfig.dev.json --noClear --onSuccess \"npm run start:debug\"",
     "start": "node dist/index.js",
-    "start:debug": "node dist/index.js --inspect"
+    "start:debug": "node dist/index.js --inspect",
+    "test": "vitest run --coverage",
+    "test:dev": "vitest watch"
   },
   "repository": {
     "type": "git",
@@ -26,8 +28,11 @@
   "devDependencies": {
     "@tsconfig/node16": "^1.0.2",
     "@types/node": "^16.11.7",
+    "c8": "^7.11.0",
+    "prettier": "^2.6.0",
     "rimraf": "^3.0.2",
     "tsc-watch": "^4.6.2",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.2",
+    "vitest": "^0.7.6"
   }
 }
