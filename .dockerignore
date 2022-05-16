@@ -1,0 +1,10 @@
+.git
+.gitgnore
+
+node_modules/
+dist/
+coverage/
+docs/
+LICENSE
+
+*.md
