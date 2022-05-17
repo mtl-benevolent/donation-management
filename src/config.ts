@@ -9,7 +9,7 @@ export const appConfig = {
   knex: {
     host: process.env.DB_HOST || 'cockroachdb',
     port: safelyParseInteger(process.env.DB_PORT, 26257),
-    user: process.env.DB_USER || 'root',
+    user: process.env.DB_USER || 'donation_mgmt_app',
     password: process.env.DB_PASSWORD || undefined,
     database: process.env.DB_NAME || 'donationsdb',
     schema: process.env.DB_SCHEMA || 'donations',

@@ -10,6 +10,18 @@ services:
     command:
       - start-single-node
       - --insecure
+  cockroach-init:
+    image: cockroachdb/cockroach:v21.2.10
+    depends_on:
+      - cockroachdb
+    volumes:
+      - ./db-dev-init:/db-init
+    environment:
+      - COCKROACH_HOST=cockroachdb
+      - COCKROACH_PORT=26257
+      - COCKROACH_USER=root
+      - COCKROACH_INSECURE=true
+    entrypoint: /db-init/init.sh
   donation-management:
     build: .
     depends_on:
