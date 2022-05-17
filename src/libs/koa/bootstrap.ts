@@ -1,6 +1,7 @@
 import Router from '@koa/router';
 import Koa from 'koa';
 import koaLogsMiddleware from 'koa-pino-logger';
+import { onShutdown } from 'node-graceful-shutdown';
 import { AppConfig } from '../../config';
 import { createDebugRouter } from '../../debug/debug.controller';
 import { getLogger } from '../pino/bootstrap';
@@ -56,8 +57,25 @@ export function bootstrapKoa(config: AppConfig['koa']) {
 
   koaApp = initKoa();
 
-  koaApp.listen(config.port, () => {
+  const server = koaApp.listen(config.port, () => {
     logger.info({}, 'Koa listening on port %d', config.port);
+  });
+
+  onShutdown('koa', () => {
+    if (!server) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      server.close((maybeErr) => {
+        if (maybeErr) {
+          reject(maybeErr);
+          return;
+        }
+
+        resolve();
+      });
+    });
   });
 
   return koaApp;
