@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf dist && rimraf tsconfig.dev.tsbuildinfo",
-    "dev": "tsc-watch -p tsconfig.dev.json --noClear --onSuccess \"npm run start:debug\"",
+    "dev": "tsc-watch -p tsconfig.dev.json --noClear --onSuccess \"npm run start:debug\" | pino-pretty",
     "start": "node dist/index.js",
     "start:debug": "node dist/index.js --inspect",
     "test": "vitest run --coverage",
@@ -32,6 +32,7 @@
     "@types/koa-pino-logger": "^3.0.1",
     "@types/node": "16.11.7",
     "c8": "7.11.0",
+    "pino-pretty": "^7.6.1",
     "prettier": "2.6.0",
     "rimraf": "3.0.2",
     "tsc-watch": "4.6.2",

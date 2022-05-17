@@ -3,7 +3,7 @@ FROM node:16.15.0-slim AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 
 FROM node:16.15.0-slim AS builder
 
@@ -40,7 +40,7 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/dist/ ./dist
 
-RUN npm install --production
+RUN npm ci --production
 
 USER pptruser
 

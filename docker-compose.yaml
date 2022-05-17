@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  donation-management:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - '8300:8300'
+    command:
+      - npm
+      - run
+      - dev
