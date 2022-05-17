@@ -1,7 +1,19 @@
 version: '3.8'
 services:
+  cockroachdb:
+    image: cockroachdb/cockroach:v21.2.10
+    volumes:
+      - COCKROACH_DATA:/cockroach/cockroach-data
+    ports:
+      - 26257:26257
+      - 8080:8080
+    command:
+      - start-single-node
+      - --insecure
   donation-management:
     build: .
+    depends_on:
+      - cockroachdb
     volumes:
       - .:/app
     ports:
@@ -10,3 +22,5 @@ services:
       - npm
       - run
       - dev
+volumes:
+  COCKROACH_DATA:
