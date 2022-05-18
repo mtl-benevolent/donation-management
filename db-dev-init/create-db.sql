@@ -5,7 +5,6 @@ CREATE SCHEMA IF NOT EXISTS donationsdb.donations;
 CREATE ROLE IF NOT EXISTS donations_rw;
 CREATE ROLE IF NOT EXISTS donations_migrators;
 
-
 -- Setting up donations_rw role
 GRANT CONNECT ON DATABASE donationsdb TO donations_rw;
 GRANT USAGE ON SCHEMA donationsdb.donations TO donations_rw;

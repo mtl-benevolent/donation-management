@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 connected=false
 
-until [ connected ]
+until $connected
 do
-  if cockroach sql --execute="SELECT 1" --echo-sql; then
+  cockroach sql --execute="SELECT 1";
+
+  if [ $? -eq 0 ]; then
+    echo "DB is available"
     connected=true
+  else
+    sleep 5;
   fi
 done
 
-cockroach sql -f /db-init/create-db.sql
+cockroach sql -f /db-init/create-db.sql --echo-sql
 
 echo "DB Initialized"
