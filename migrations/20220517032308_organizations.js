@@ -1,4 +1,3 @@
-const { grantPermissionsToApp } = require('./utils/permissions');
 const {
   addCreateTrace,
   addUpdateTrace,
@@ -28,8 +27,6 @@ exports.up = async function (knex) {
     addUpdateTrace(orgTable);
     addArchiveTrace(orgTable);
   });
-
-  await grantPermissionsToApp(knex, ORGANIZATIONS_TABLE);
 };
 
 /**
