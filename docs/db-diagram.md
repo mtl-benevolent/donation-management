@@ -54,7 +54,7 @@ Templates allow organizations to customize the content of the generated artifact
     logo_url: text | null
     locales: jsonb~locales~
 
-    smtpSettings: jsonb~SmtpSettings~ | null
+    smtp_settings: jsonb~SmtpSettings~ | null
   }
 
   class templates {
