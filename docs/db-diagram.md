@@ -1,274 +1,262 @@
 # Database diagram
 
+The database schema is described below. Every table is represented by a class in the class diagrams.
+
+## 🐾 Tracing
+
+Tracing fields can be appended to database entities. Those traces add the described fields on the attached entity.
+
 ```mermaid
   classDiagram
 
-  class Organization {
-    UUID id [pk]
-    varchar255 name [not null]
-    varchar1024 slug [not null, unique]
-    varchar1024 logoUrl
-
-    jsonb smtpSettings
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp updatedAt
-    varchar255 updatedBy
-    timestamp archivedAt
-    varchar255 archivedBy
+  class Create {
+    created_at: timestamp
+    created_by: varchar255
   }
 
-  class User {
-    UUID id [pk, not null]
-    varchar255 firstName [not null]
-    varchar255 lastName [not null]
-    varchar320 email [not null, unique]
-    boolean blocked
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp updatedAt
-    varchar255 updatedBy
+  class Update {
+    updated_at: timestamp | null
+    updated_by: varchar255 | null
   }
 
-  %% User access tables
-  class UserOrganizationAccess {
-    UUID id [pk, not null]
-    UUID userId [not null, ref:User.id]
-    UUID organizationId [not null, ref:Organization.id]
-    varchar1024 capability [not null]
+  class Archive {
+    archived_at: timestamp | null
+    archived_by: varchar255 | null
+  }
+```
 
-    timestamp syncedAt
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
+## 🔐 Organizations, Templates & Settings
 
-    ix_userId_organizationId_capability(unique)
+Organizations are the primary entity of the system. Donations, templates and other settings are attached to them.
+
+Templates allow organizations to customize the content of the generated artifacts (receipts and emails) so it matches their branding.
+
+```mermaid
+  classDiagram
+
+  class organizations {
+    <<create, update, archive>>
+    id: uuid [pk]
+    name: varchar255
+    slug: varchar1024 [unique]
+    logo_url: text | null
+    locales: jsonb~locales~
+
+    smtpSettings: jsonb~SmtpSettings~ | null
   }
 
-  UserOrganizationAccess "*" -- "1" User
-  UserOrganizationAccess "*" -- "1" Organization
+  class templates {
+    <<create>>
+    organization_id: uuid [pk]
+    usage: TemplateUsage [pk]
+    dialect: TemplateDialect
 
-  class UserGlobalAccess {
-    UUID id [pk, not null]
-    UUID userId [not null, ref: User.id]
-    varchar1024 capability [not null]
-
-    timestamp syncedAt
-
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-
-    ix_userId_capability(unique)
+    fk_organizations(organizations.id, organization_id, CASCADE)
   }
-
-  UserGlobalAccess "*" -- "1" User
-
-  %% Organization settings / Templates
-  class Template {
-    UUID id [pk, not null]
-    UUID organizationId [not null, ref: Organization.id]
-    varchar1024 name [not null]
-    TemplateUsage usage [not null]
-
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp updatedAt
-    varchar255 updatedBy
-  }
+  templates "*" -- "1" organizations
 
   class TemplateUsage {
     <<enumeration>>
     receipt,
-    no_addr_reminder,
+    no_address_email,
     receipt_email
   }
 
-  TemplateUsage -- Template
-  Template "*" -- "1" Organization
+  TemplateUsage -- templates
 
-  class TemplateVersion {
-    UUID id [pk, not null]
-    UUID templateId [not null, ref: Template.id]
-    int version [not null]
+  class TemplateDialect {
+    <<enumeration>>
+    handlebars,
+    mjml_handlebars
+  }
 
-    text template [not null]
+  TemplateDialect -- templates
 
-    timestamp publishedAt
-    varchar255 publishedBy
+  class template_versions {
+    <<create, update>>
+    id: uuid [pk]
+    template_id: uuid
 
+    template: text
+    translations: jsonb~TemplateTranslations~
+
+    published_at: timestamp | null
+    published_by: varchar255 | null
+
+    fk_templates(templates.id, template_id, CASCADE)
+  }
+
+  template_versions "*" -- "1" templates
+```
+
+### JSON objects
+
+```typescript
+type Locales {
+  locales: string[]
+}
+
+type SmtpSettings {
+  host: string
+  port: number
+  secure: boolean
+  username: string
+  password: string  // Must be encrypted (use AES-256)
+  from: string | null
+  replyTo: string | null
+}
+
+type LocalizedString = Record<string, string>
+
+type TemplateTranslations = Record<string, LocalizedString>
+```
+
+## 💵 Donations
+
+Donations record the action of a donor who gives money. Donations come in two modes: one-time donations and recurring donations.
+
+One-time donations record the donation and produce the receipts immediately after.
+
+Recurring donations record donations made throughout the year. Only once the fiscal year is closed are all receipts produced and sent.
+
+```mermaid
+  classDiagram
+
+  class donations {
+    <<create, update, archive>>
+    id: uuid [pk]
+    organizationId: uuid
     ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp updatedAt
-    varchar255 updatedBy
-
-    ix_templateId_version(unique)
-  }
-
-  TemplateVersion "*" -- "1" Template
-
-  class TemplateVersionI18n {
-    UUID templateVersionId [pk, not null, ref: TemplateVersion.id]
-
-    varchar255 key [not null]
-    jsonb translations [not null]
-  }
-
-  TemplateVersionI18n "*" -- "1" TemplateVersion
-
-  %% Donations
-
-  class Donation {
-    UUID id [pk, not null]
-    UUID organizationId [not null, ref: Organization.id]
-
-    varchar255 donorFirstName
-    varchar255 donorLastNameOrOrgName [not null]
-    varchar320 donorEmail
-
-    varchar255 donorAddrLine1
-    varchar255 donorAddrLine2
-    varchar255 donorAddrCity
-    varchar255 donorAddrState
-    varchar255 donorAddrPostalCode
-    varchar255 donorAddrCountry
-
-    int fiscalYear [not null]
-    varchar1024 reason
-    DonationType type [not null]
-
+    fiscal_year: smallint
+    reason: varchar | null
+    type: DonationType
+    currency: varchar3
     ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp updatedAt
-    varchar255 updatedBy
-    timestamp archivedAt
-    varchar255 archivedBy
+    donor_first_name: varchar | null
+    donor_last_name_or_org_name: varchar
+    donor_email: varchar320
+    donor_address: jsonb~Address~ | null
+    ---
+    entries: jsonb~DonationEntries~
+    ---
+    receipts: jsonb~DonationReceipts~
+    receipt_status: ReceiptStatus | null;
+    ---
+    correspondences: jsonb~DonationCorrespondences~
+    ---
+    comments: jsonb~DonationComments~
+
+    fk_organizations(organizations.id, organization_id, CASCADE)
   }
 
-  Donation "*" -- "1" Organization
+  donations "*" -- "1" organizations
 
   class DonationType {
     <<enumeration>>
-    OneTime,
-    Recurrent
+    one-time,
+    recurrent
   }
 
-  DonationType -- Donation
+  DonationType -- donations
 
-  class DonationPayment {
-    UUID id [pk, not null]
-    UUID donationId [not null, ref: Donation.id]
-    int fractionalAmount [not null]
-    varchar3 currency [not null]
-    int fractionalReceiptAmount [not null]
-
-    varchar255 source [not null]
-    jsonb sourceDetails
-
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp archivedAt
-    varchar255 archivedBy
-  }
-
-  DonationPayment "1...*" -- "1" Donation
-
-  class DonationDocument {
-    UUID id [pk, not null]
-    UUID donationId [not null, ref: Donation.id]
-    varchar255 name [not null]
-    varchar1024 description
-    varchar2048 uri
-
-    UUID templateVersion [not null, ref: TemplateVersion]
-
-    DonationDocumentGenerationStatus generationStatus [not null]
-
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp archivedAt
-    varchar255 archivedBy
-  }
-
-  DonationDocument "*" -- "1" Donation
-  DonationDocument "*" -- "1" TemplateVersion
-
-  class DonationDocumentGenerationStatus {
+  class ReceiptStatus {
     <<enumeration>>
-    pending,
-    created
+    inProgress,
+    done,
+    error
   }
 
-  DonationDocumentGenerationStatus -- DonationDocument
+  ReceiptStatus -- donations
+```
 
-  class DonationCorrespondence {
-    UUID id [pk, not null]
-    UUID donationId [not null, ref: Donation.id]
+### JSON Objects
 
-    varchar320 sentTo [not null]
-    DonationCorrespondenceStatus status [not null]
-    DonationCorrespondenceType type [not null]
+```typescript
+type Address = {
+  line1: string;
+  line2: string | null;
+  city: string;
+  postalCode: string;
+  state: string | null;
+  country: string;
+};
 
-    UUID templateVersion [not null, ref: TemplateVersion]
+// DonationEntries
+enum DonationSource {
+  paypal,
+  check,
+  directDeposit,
+  stocks,
+  other,
+}
 
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp archivedAt
-    varchar255 archivedBy
-  }
+type DonationEntry = {
+  id: string;
+  fractionalAmount: number;
+  fractionalReceiptAmount: number;
 
-  DonationCorrespondence "*" -- "1" Donation
-  DonationCorrespondence "*" -- "1" TemplateVersion
+  receivedAt: Date;
 
-  class DonationCorrespondenceStatus {
-    <<enumeration>>
-    pending,
-    sent
-  }
+  source: DonationSource;
+  sourceDetails: PaypalPayment | null;
+} & CreateEntity &
+  ArchiveEntity;
 
-  DonationCorrespondenceStatus -- DonationCorrespondence
+type DonationEntries = {
+  entries: DonationEntry[];
+};
 
-  class DonationCorrespondenceType {
-    <<enumeration>>
-    noAddrReminder,
-    receipt
-  }
+// Receipts
+enum ReceiptType = {
+  original,
+  revised,
+}
 
-  DonationCorrespondenceType -- DonationCorrespondence
+type Receipt = {
+  id: string;
+  type: ReceiptType;
 
-  class DonationCorrespondenceAttachment {
-    UUID donationCorrespondenceId [pk, not null, ref: DonationCorrespondence.id]
-    UUID donationDocumentId [pk, not null, ref: DonationDocument.id]
-  }
+  fileUri: string | null;
+} & CreateEntity & ArchiveEntity;
 
-  DonationCorrespondenceAttachment "*" -- "1" DonationCorrespondence
-  DonationCorrespondenceAttachment "*" -- "1" DonationDocument
+type DonationReceipts = {
+  receipts: Receipt[]
+}
 
-  class DonationComment {
-    UUID id [pk, not null]
-    UUID donationId [not null, ref: Donation.id]
+// Correspondences
+enum CorrespondenceStatus = {
+  inProgress,
+  done,
+  error,
+}
 
-    text comment [not null]
+enum CorrespondenceType = {
+  noAddressReminder,
+  receipt,
+}
 
-    UUID authorUserId [not null, ref: User.id]
+type Correspondence = {
+  id: string;
+  type: CorrespondenceType;
+  status: CorrespondenceStatus;
 
-    ---
-    timestamp createdAt [not null]
-    varchar255 createdBy [not null]
-    timestamp updatedAt
-    varchar255 updatedBy
-    timestamp archivedAt
-    varchar255 archivedBy
-  }
+  sentTo: string;
+  sentAt: Date;
 
-  DonationComment "*" -- "1" Donation
-  DonationComment "*" -- "1" User
+  attachedDocumentIds: string[];
+
+} & CreateEntity & ArchiveEntity;
+
+type DonationCorrespondences = {
+  correspondences: Correspondence[];
+}
+
+// Comments
+type Comment = {
+  comment: string;
+} & CreateEntity & UpdateEntity & ArchiveEntity;
+
+type DonationComments = {
+  comments: Comment[];
+}
 ```
