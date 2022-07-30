@@ -2,6 +2,18 @@
 
 The database schema is described below. Every table is represented by a class in the class diagrams.
 
+## Common entitie
+
+```mermaid
+  classDiagram
+
+  class Environment {
+    <<enumeration>>
+    sandbox,
+    live
+  }
+```
+
 ## 🐾 Tracing
 
 Tracing fields can be appended to database entities. Those traces add the described fields on the attached entity.
@@ -37,7 +49,7 @@ Templates allow organizations to customize the content of the generated artifact
   class organizations {
     <<create, update, archive>>
     id: uuid [pk]
-    name: varchar255
+    name: varchar
     slug: varchar1024 [unique]
     logo_url: text | null
     locales: jsonb~locales~
@@ -126,6 +138,7 @@ Recurring donations record donations made throughout the year. Only once the fis
     <<create, update, archive>>
     id: uuid [pk]
     organizationId: uuid
+    environment: Environment
     ---
     fiscal_year: smallint
     reason: varchar | null
@@ -146,6 +159,7 @@ Recurring donations record donations made throughout the year. Only once the fis
     ---
     comments: jsonb~DonationComments~
 
+    ix(organization_id, environment)
     fk_organizations(organizations.id, organization_id, CASCADE)
   }
 
