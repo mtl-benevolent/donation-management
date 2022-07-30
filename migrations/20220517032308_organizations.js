@@ -11,21 +11,22 @@ const ORGANIZATIONS_TABLE = 'organizations';
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
-  await knex.schema.createTable(ORGANIZATIONS_TABLE, (orgTable) => {
-    orgTable
+  await knex.schema.createTable(ORGANIZATIONS_TABLE, (table) => {
+    table
       .uuid('id')
       .primary()
       .notNullable()
       .defaultTo(knex.raw('gen_random_uuid()'));
-    orgTable.string('name', 255).notNullable();
-    orgTable.string('slug', 1024).notNullable().unique();
-    orgTable.string('logoUrl', 1024);
+    table.string('name').notNullable();
+    table.string('slug', 1024).notNullable().unique();
+    table.string('logo_url', 1024).nullable();
 
-    orgTable.jsonb('smtpSettings');
+    table.jsonb('locales').notNullable();
+    table.jsonb('smtp_settings').nullable();
 
-    addCreateTrace(knex, orgTable);
-    addUpdateTrace(orgTable);
-    addArchiveTrace(orgTable);
+    addCreateTrace(knex, table);
+    addUpdateTrace(table);
+    addArchiveTrace(table);
   });
 };
 

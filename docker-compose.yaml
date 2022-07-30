@@ -10,6 +10,7 @@ services:
     command:
       - start-single-node
       - --insecure
+
   cockroach-init:
     image: cockroachdb/cockroach:v21.2.10
     depends_on:
@@ -22,6 +23,7 @@ services:
       - COCKROACH_USER=root
       - COCKROACH_INSECURE=true
     entrypoint: /db-init/init.sh
+
   donation-management:
     build: .
     depends_on:

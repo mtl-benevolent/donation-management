@@ -1,18 +1,18 @@
 exports.addCreateTrace = function addCreateTrace(knex, table) {
   table
-    .timestamp('createdAt', { useTz: false })
+    .timestamp('created_at', { useTz: false })
     .notNullable()
     .defaultTo(knex.fn.now());
 
-  table.string('createdBy', 255).notNullable();
+  table.string('created_by', 255).notNullable();
 };
 
 exports.addUpdateTrace = function addUpdateTrace(table) {
-  table.timestamp('updatedAt', { useTz: false });
-  table.string('updatedBy', 255);
+  table.timestamp('updated_at', { useTz: false });
+  table.string('updated_by', 255);
 };
 
 exports.addArchiveTrace = function addArchiveTrace(table) {
-  table.timestamp('archivedAt', { useTz: false });
-  table.string('archivedBy', 255);
+  table.timestamp('archived_at', { useTz: false });
+  table.string('archived_by', 255);
 };
