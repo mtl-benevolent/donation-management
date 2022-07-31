@@ -1,6 +1,9 @@
 import Router from '@koa/router';
-import { OrganizationData } from '../models/organization.model';
+import { EntityNotFoundError } from '../../system/errors/entity-not-found.error';
+import { OrganizationData, SmtpSettings } from '../models/organization.model';
 import { organizationService } from '../services/organization.service';
+import { organizationDTOMappers } from './dtos/organization.dto';
+import { smtpSettingsDTOMappers } from './dtos/smtp-settings.dto';
 
 export function createOrganizationController(): Router {
   const organizationController = new Router({
@@ -15,19 +18,41 @@ export function createOrganizationController(): Router {
       slug,
     });
 
-    // TODO: Map to DTO
-    ctx.response.body = organization;
+    ctx.response.body = organizationDTOMappers.toDTO(organization);
   });
 
   organizationController.post('/', async (ctx) => {
-    // TODO: Validate body
-    const requestDTO: OrganizationData = ctx.request.body;
+    // TODO: Validate request body
+    const orgData: OrganizationData = organizationDTOMappers.toOrgDataModel(
+      ctx.request.body
+    );
 
-    const created = await organizationService.create(requestDTO);
+    const created = await organizationService.create(orgData);
 
     ctx.response.body = created;
     ctx.response.status = 201;
   });
+
+  // SMTP Settings
+  organizationController.get('/:slug/smtp-settings', async (ctx) => {
+    const slug = ctx.params.slug;
+
+    const organization = await organizationService.get({
+      includeSmtpPassword: false,
+      slug,
+    });
+
+    if (!organization.smtpSettings) {
+      throw new EntityNotFoundError('SmtpSettings', null, {
+        field: 'slug',
+        value: slug,
+      });
+    }
+
+    ctx.response.body = smtpSettingsDTOMappers.toDTO(organization.smtpSettings);
+  });
+
+  // TODO: Implement update organization SMTP Settings
 
   return organizationController;
 }
