@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import { SmtpSettings } from '../../models/organization.model';
 
 export type SmtpSettingsDTO = {
@@ -9,6 +10,16 @@ export type SmtpSettingsDTO = {
   from: string | null;
   replyTo: string | null;
 };
+
+export const smtpSettingsDTOSchema = Joi.object<SmtpSettingsDTO>({
+  host: Joi.string().hostname().required(),
+  port: Joi.number().port().required(),
+  secure: Joi.bool().required(),
+  username: Joi.string().min(1).required(),
+  password: Joi.string().min(1).required(),
+  from: Joi.string().email().allow(null).required(),
+  replyTo: Joi.string().email().allow(null).required(),
+});
 
 export const smtpSettingsDTOMappers = {
   toDTO: (model: SmtpSettings): SmtpSettingsDTO => ({
