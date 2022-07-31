@@ -36,5 +36,7 @@ services:
       - npm
       - run
       - dev
+    environment:
+      - ENCRYPTION_KEY=db5269ea782af1896a4d0b05f9ff7ab66143c7b9583aa0b7de725b8362c8cfcd
 volumes:
   COCKROACH_DATA:

@@ -15,4 +15,8 @@ export const appConfig = {
     schema: process.env.DB_SCHEMA || 'donations',
     debug: true,
   },
+  encryption: {
+    // Must be a Hexadecimal string of 32 bytes exactly
+    secretValue: process.env.ENCRYPTION_KEY ?? '',
+  },
 };

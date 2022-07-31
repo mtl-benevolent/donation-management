@@ -24,6 +24,8 @@ exports.up = async function (knex) {
     table.jsonb('locales').notNullable();
     table.jsonb('smtp_settings').nullable();
 
+    table.index('slug');
+
     addCreateTrace(knex, table);
     addUpdateTrace(table);
     addArchiveTrace(table);

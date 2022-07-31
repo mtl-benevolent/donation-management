@@ -1,9 +1,11 @@
 import Router from '@koa/router';
 import Koa from 'koa';
+import bodyParser from 'koa-bodyparser';
 import koaLogsMiddleware from 'koa-pino-logger';
 import { onShutdown } from 'node-graceful-shutdown';
-import { AppConfig } from '../../config';
+import { appConfig, AppConfig } from '../../config';
 import { createDebugRouter } from '../../debug/debug.controller';
+import { createOrganizationController } from '../../organizations/controllers/organization.controller';
 import { getLogger } from '../pino/bootstrap';
 
 const logger = getLogger('koa');
@@ -19,7 +21,7 @@ export function getKoa() {
 }
 
 function registerControllers(rootRouter: Router) {
-  const routers = [createDebugRouter()];
+  const routers = [createOrganizationController()];
 
   routers.forEach((router) => {
     rootRouter.use(router.routes(), router.allowedMethods());
@@ -29,6 +31,8 @@ function registerControllers(rootRouter: Router) {
 function initKoa() {
   const app = new Koa();
   const router = new Router();
+
+  app.use(bodyParser());
 
   app.use(
     koaLogsMiddleware({
@@ -50,10 +54,12 @@ function initKoa() {
   return app;
 }
 
-export function bootstrapKoa(config: AppConfig['koa']) {
+export function bootstrapKoa() {
   if (koaApp) {
     return koaApp;
   }
+
+  const config = appConfig.koa;
 
   koaApp = initKoa();
 

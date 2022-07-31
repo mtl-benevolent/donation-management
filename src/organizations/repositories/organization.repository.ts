@@ -1,16 +1,25 @@
 import { getKnex } from '../../libs/knex/bootstrap';
 import { GetQueryBuilder } from '../../libs/knex/query-builder';
-import { Organization } from '../models/organization.model';
-import { makeFindOrganizationById } from './find-organization-by-id';
-import { makeFindOrganizationBySlug } from './find-organization-by-slug';
+import { clock } from '../../system/clock/clock';
+import { getUserId } from '../../system/context/get-current-user-id';
+import { encryption } from '../../system/encryption/encryption';
+import { OrganizationDBEntity } from './db-entities/organization.db-entity';
+import { makeFindOrganization } from './find-organization';
+import { makeInsertOrganization } from './insert-organization';
 
-const getQueryBuilder: GetQueryBuilder<Organization> = () => {
-  return getKnex().table<Organization>('organizations');
+const getQueryBuilder: GetQueryBuilder<OrganizationDBEntity> = () => {
+  return getKnex().table<OrganizationDBEntity>('organizations');
 };
 
-export type OrganizationRepository = typeof organizationRepository;
-
 export const organizationRepository = {
-  findOrganizationById: makeFindOrganizationById(getQueryBuilder),
-  findOrganizationBySlug: makeFindOrganizationBySlug(getQueryBuilder),
+  findOrganization: makeFindOrganization({
+    decrypt: encryption.decrypt,
+    getQueryBuilder,
+  }),
+  insertOrganization: makeInsertOrganization({
+    clock,
+    getUserId,
+    encrypt: encryption.encrypt,
+    getQueryBuilder,
+  }),
 };

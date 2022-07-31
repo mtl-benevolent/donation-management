@@ -46,8 +46,8 @@ function initKnex(dbConfig: AppConfig['knex']) {
   return knexInstance;
 }
 
-export function bootstrapKnex(knexConfig: AppConfig['knex']) {
-  knexInstance = initKnex(knexConfig);
+export function bootstrapKnex() {
+  knexInstance = initKnex(appConfig.knex);
 
   onShutdown('knex', ['koa'], async () => {
     await knexInstance?.destroy();
