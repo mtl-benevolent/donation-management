@@ -1,10 +1,28 @@
-import { safelyParseInteger } from './utils/number.utils';
+import {
+  AppEnvironment,
+  appEnvironments,
+} from './system/environments/app-environments.enum';
+import { safelyParseEnum } from './utils/enums/enums.utils';
+import { safelyParseInteger } from './utils/numbers/numbers.utils';
+
+const appEnv = safelyParseEnum<AppEnvironment>(
+  process.env.NODE_ENV,
+  appEnvironments,
+  appEnvironments.development
+);
 
 export type AppConfig = typeof appConfig;
 
 export const appConfig = {
+  environment: appEnv,
   koa: {
     port: 8300,
+    safeErrors: process.env.SAFE_ERRORS === 'false' ? false : true,
+    reportValidationErrors: [
+      appEnvironments.development,
+      appEnvironments.compose,
+      appEnvironments.staging,
+    ].includes(appEnv),
   },
   knex: {
     host: process.env.DB_HOST || 'cockroachdb',

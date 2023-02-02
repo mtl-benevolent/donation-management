@@ -9,9 +9,9 @@ type Deps = {
   findOrganization: FindOrganizationFn;
 };
 
-export type GetOrganizationParams = {
-  includeSmtpPassword?: boolean;
-} & ({ organizationId: string } | { slug: string });
+export type GetOrganizationParams =
+  | { organizationId: string }
+  | { slug: string };
 
 export function makeGetOrganization(deps: Deps) {
   return async function getOrganization(
@@ -19,7 +19,6 @@ export function makeGetOrganization(deps: Deps) {
   ): Promise<Organization> {
     const findParams: FindOrganizationParams = {
       includeArchived: false,
-      includeSmtpPassword: params.includeSmtpPassword,
       oneOf: {},
     };
 

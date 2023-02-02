@@ -1,58 +1,56 @@
 import Router from '@koa/router';
-import { EntityNotFoundError } from '../../system/errors/entity-not-found.error';
-import { OrganizationData, SmtpSettings } from '../models/organization.model';
+import {
+  validateBody,
+  validateParam,
+  validateResponse,
+} from '../../libs/koa/validation/validate.middleware';
 import { organizationService } from '../services/organization.service';
 import { organizationDTOMappers } from './dtos/organization.dto';
-import { smtpSettingsDTOMappers } from './dtos/smtp-settings.dto';
+import {
+  CreateOrganizationRequest,
+  organizationContracts,
+} from './organization.contracts';
 
 export function createOrganizationController(): Router {
   const organizationController = new Router({
     prefix: '/organizations',
   });
 
-  organizationController.get('/:slug', async (ctx) => {
-    const slug = ctx.params.slug;
+  organizationController.get(
+    '/:slug',
+    validateParam('slug', organizationContracts.params.slug),
+    validateResponse(organizationContracts.responses.organizationDTO),
+    async (ctx) => {
+      const slug = ctx.params.slug;
 
-    const organization = await organizationService.get({
-      includeSmtpPassword: false,
-      slug,
-    });
-
-    ctx.response.body = organizationDTOMappers.toDTO(organization);
-  });
-
-  organizationController.post('/', async (ctx) => {
-    // TODO: Validate request body
-    const orgData: OrganizationData = organizationDTOMappers.toOrgDataModel(
-      ctx.request.body
-    );
-
-    const created = await organizationService.create(orgData);
-
-    ctx.response.body = created;
-    ctx.response.status = 201;
-  });
-
-  // SMTP Settings
-  organizationController.get('/:slug/smtp-settings', async (ctx) => {
-    const slug = ctx.params.slug;
-
-    const organization = await organizationService.get({
-      includeSmtpPassword: false,
-      slug,
-    });
-
-    if (!organization.smtpSettings) {
-      throw new EntityNotFoundError('SmtpSettings', null, {
-        field: 'slug',
-        value: slug,
+      const organization = await organizationService.get({
+        slug,
       });
+
+      ctx.response.body = organizationDTOMappers.toDTO(organization);
     }
+  );
 
-    ctx.response.body = smtpSettingsDTOMappers.toDTO(organization.smtpSettings);
-  });
+  organizationController.post(
+    '/',
+    validateBody(organizationContracts.requests.create),
+    validateResponse(organizationContracts.responses.organizationDTO),
+    async (ctx) => {
+      const request = ctx.request.body as CreateOrganizationRequest;
 
-  // TODO: Implement update organization SMTP Settings
+      console.log('REQUEST', request);
+
+      const created = await organizationService.create({
+        name: request.name,
+        slug: request.slug,
+        logoUrl: request.logoUrl,
+        locales: new Set(request.locales),
+      });
+
+      ctx.response.body = organizationDTOMappers.toDTO(created);
+      ctx.response.status = 201;
+    }
+  );
 
   return organizationController;
 }

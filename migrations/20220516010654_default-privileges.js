@@ -15,7 +15,3 @@ exports.up = async function (knex) {
 exports.down = async function () {
   console.log('No implementation');
 };
-
-exports.config = {
-  transaction: false,
-};

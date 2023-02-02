@@ -3,6 +3,9 @@ module.exports = {
   development: {
     client: 'pg',
     version: '13',
+    migrations: {
+      disableTransactions: true,
+    },
     connection: {
       host: 'localhost',
       port: 26257,
@@ -15,6 +18,9 @@ module.exports = {
   compose: {
     client: 'pg',
     version: '13',
+    migrations: {
+      disableTransactions: true,
+    },
     connection: {
       host: 'cockroachdb',
       port: 26257,

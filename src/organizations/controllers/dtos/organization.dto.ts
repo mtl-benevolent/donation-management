@@ -1,44 +1,30 @@
 import Joi from 'joi';
-import { standardSchema } from '../../../system/validation/standard-validation';
 import {
-  Organization,
-  OrganizationData,
-} from '../../models/organization.model';
+  CreateTraceableDTO,
+  UpdateTraceableDTO,
+} from '../../../system/tracing/traceable.dto';
+import { standardSchema } from '../../../system/validation/standard-validation';
+import { Organization } from '../../models/organization.model';
 
-export type OrganizationDataDTO = {
+export type OrganizationDTO = {
+  id: string;
   name: string;
   slug: string;
   logoUrl: string | null;
   locales: string[];
-};
+} & CreateTraceableDTO &
+  UpdateTraceableDTO;
 
-export const organizationDataDTOSchema = Joi.object<OrganizationDataDTO>({
-  name: Joi.string().min(1).required(),
+export const organizationDTOSchema = Joi.object<OrganizationDTO>({
+  id: standardSchema.objectId.required(),
+  name: Joi.string().required(),
   slug: standardSchema.webSlug.required(),
-  logoUrl: Joi.string().min(1).uri().allow(null).required(),
-  locales: Joi.array()
-    .min(1)
-    .items(standardSchema.locale.required())
-    .required(),
+  logoUrl: Joi.string().uri().allow(null).required(),
+  locales: Joi.array().items(standardSchema.locale).min(1).required(),
+
+  createdAt: standardSchema.createdAt.required(),
+  updatedAt: standardSchema.updatedAt.required(),
 });
-
-export type OrganizationDTO = OrganizationDataDTO & {
-  id: string;
-  isSetupComplete: boolean;
-} & {
-  createdAt: Date;
-  updatedAt: Date | null;
-};
-
-export const organizationDTOSchema = organizationDataDTOSchema.concat(
-  Joi.object<OrganizationDTO>({
-    id: Joi.string().uuid().required(),
-    isSetupComplete: Joi.bool().required(),
-
-    createdAt: Joi.date().required(),
-    updatedAt: Joi.date().allow(null).required(),
-  })
-) as Joi.ObjectSchema<OrganizationDTO>;
 
 export const organizationDTOMappers = {
   toDTO: (model: Organization): OrganizationDTO => ({
@@ -48,16 +34,7 @@ export const organizationDTOMappers = {
     logoUrl: model.logoUrl,
     locales: Array.from(model.locales),
 
-    isSetupComplete: !!model.smtpSettings,
-
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,
-  }),
-  toOrgDataModel: (dto: OrganizationDataDTO): OrganizationData => ({
-    name: dto.name,
-    slug: dto.slug.toLowerCase(),
-    logoUrl: dto.logoUrl,
-    locales: new Set(dto.locales),
-    smtpSettings: null,
   }),
 };

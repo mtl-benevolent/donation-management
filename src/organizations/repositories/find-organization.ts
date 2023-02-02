@@ -1,6 +1,4 @@
 import { GetQueryBuilder } from '../../libs/knex/query-builder';
-import { DecryptFn } from '../../system/encryption/decrypt';
-import { EntityNotFoundError } from '../../system/errors/entity-not-found.error';
 import { traceDBFields } from '../../system/tracing/traceable.db-entity';
 import { sqlUtils } from '../../utils/sql/sql.utils';
 import { Organization } from '../models/organization.model';
@@ -10,7 +8,6 @@ import {
 } from './db-entities/organization.db-entity';
 
 type Deps = {
-  decrypt: DecryptFn;
   getQueryBuilder: GetQueryBuilder<OrganizationDBEntity>;
 };
 
@@ -18,7 +15,6 @@ export type FindOrganizationFn = ReturnType<typeof makeFindOrganization>;
 
 export type FindOrganizationParams = {
   includeArchived?: boolean;
-  includeSmtpPassword?: boolean;
   oneOf: {
     organizationId?: string;
     slug?: string;
@@ -39,7 +35,6 @@ export function makeFindOrganization(deps: Deps) {
           'slug',
           'logo_url',
           'locales',
-          'smtp_settings',
           ...traceDBFields.create,
           ...traceDBFields.update,
           ...traceDBFields.archive,
@@ -70,9 +65,6 @@ export function makeFindOrganization(deps: Deps) {
       'organizations'
     );
 
-    return organizationDBMappers.toModel(
-      dbEntity,
-      params.includeSmtpPassword ? deps.decrypt : undefined
-    );
+    return organizationDBMappers.toModel(dbEntity);
   };
 }

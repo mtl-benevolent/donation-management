@@ -1,7 +1,14 @@
-import { RFC7808Error } from './rfc7808.error';
+import { RFC7807Error, RFC7807Response } from './rfc7807.error';
 
-export class EntityNotFoundError extends RFC7808Error {
+type QueryDetail = {
+  field: string;
+  value: any;
+};
+
+export class EntityNotFoundError extends RFC7807Error {
   status = 404;
+
+  details: QueryDetail[];
 
   constructor(
     entity: string,
@@ -9,8 +16,16 @@ export class EntityNotFoundError extends RFC7808Error {
     ...query: { field: string; value: any }[]
   ) {
     super(
-      id ? `Entity ${entity} with ID ${id}` : `Entity ${entity} was not found`,
-      query
+      id ? `Entity ${entity} with ID ${id}` : `Entity ${entity} was not found`
     );
+
+    this.details = query ?? [];
+  }
+
+  serialize(safeError: boolean): RFC7807Response {
+    return {
+      ...super.serialize(safeError),
+      details: this.details,
+    };
   }
 }

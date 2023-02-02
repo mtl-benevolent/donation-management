@@ -1,5 +1,8 @@
-import { Organization, OrganizationData } from '../models/organization.model';
-import { InsertOrganizationFn } from '../repositories/insert-organization';
+import { Organization } from '../models/organization.model';
+import {
+  InsertOrganization,
+  InsertOrganizationFn,
+} from '../repositories/insert-organization';
 
 type Deps = {
   insertOrganization: InsertOrganizationFn;
@@ -7,7 +10,7 @@ type Deps = {
 
 export function makeCreateOrganization(deps: Deps) {
   return async function createOrganization(
-    entity: OrganizationData
+    entity: InsertOrganization
   ): Promise<Organization> {
     const organization = await deps.insertOrganization(entity);
     return organization;

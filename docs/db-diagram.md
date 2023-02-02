@@ -2,7 +2,7 @@
 
 The database schema is described below. Every table is represented by a class in the class diagrams.
 
-## Common entitie
+## Common entities
 
 ```mermaid
   classDiagram
@@ -12,6 +12,14 @@ The database schema is described below. Every table is represented by a class in
     sandbox,
     live
   }
+```
+
+### JSON models
+
+```typescript
+type LocalizedString = {
+  [locale: string]: string;
+};
 ```
 
 ## 🐾 Tracing
@@ -50,11 +58,9 @@ Templates allow organizations to customize the content of the generated artifact
     <<create, update, archive>>
     id: uuid [pk]
     name: varchar
-    slug: varchar1024 [unique]
+    slug: text [unique]
     logo_url: text | null
-    locales: jsonb~locales~
-
-    smtp_settings: jsonb~SmtpSettings~ | null
+    locales: jsonb~Locales~
   }
 
   class templates {
@@ -107,18 +113,6 @@ Templates allow organizations to customize the content of the generated artifact
 type Locales {
   locales: string[]
 }
-
-type SmtpSettings {
-  host: string
-  port: number
-  secure: boolean
-  username: string
-  password: string  // Must be encrypted (use AES-256)
-  from: string | null
-  replyTo: string | null
-}
-
-type LocalizedString = Record<string, string>
 
 type TemplateTranslations = Record<string, LocalizedString>
 ```

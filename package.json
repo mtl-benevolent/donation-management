@@ -1,7 +1,7 @@
 {
   "name": "@the-donatry/donation-management",
   "version": "0.1.0",
-  "description": "Donation Management service for The Donatry project",
+  "description": "Donation Management service for Benevolent project",
   "main": "dist/index.js",
   "directories": {
     "doc": "docs"
@@ -10,26 +10,26 @@
     "build": "npm run clean && tsc",
     "build:docker": "docker-compose build",
     "clean": "rimraf dist && rimraf tsconfig.dev.tsbuildinfo",
-    "dev": "tsc-watch -p tsconfig.dev.json --noClear --onSuccess \"node dist/index.js --inspect\" | pino-pretty",
-    "start": "node dist/index.js",
+    "dev": "tsc-watch -p tsconfig.dev.json --noClear --onSuccess \"node dist/index.js --enable-source-maps --inspect\" | pino-pretty",
+    "start": "node dist/index.js --enable-source-maps",
     "start:debug": "node dist/index.js --inspect",
     "start:docker": "docker-compose up -d",
     "stop:docker": "docker-compose down",
     "test": "vitest run --coverage",
     "test:dev": "vitest watch",
-    "db:migrate": "knex migrate:latest",
+    "db:latest": "knex migrate:latest",
     "db:rollback": "knex migrate:rollback"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/the-donatry/donation-management.git"
+    "url": "git+https://github.com/mtl-benevolent/donation-management.git"
   },
   "author": "Gabriel Lemire",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/the-donatry/donation-management/issues"
+    "url": "https://github.com/mtl-benevolent/donation-management/issues"
   },
-  "homepage": "https://github.com/the-donatry/donation-management#readme",
+  "homepage": "https://github.com/mtl-benevolent/donation-management#readme",
   "devDependencies": {
     "@tsconfig/node16": "1.0.2",
     "@types/joi": "17.2.3",

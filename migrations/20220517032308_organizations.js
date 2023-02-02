@@ -18,11 +18,10 @@ exports.up = async function (knex) {
       .notNullable()
       .defaultTo(knex.raw('gen_random_uuid()'));
     table.string('name').notNullable();
-    table.string('slug', 1024).notNullable().unique();
-    table.string('logo_url', 1024).nullable();
+    table.string('slug').notNullable().unique();
+    table.string('logo_url').nullable();
 
     table.jsonb('locales').notNullable();
-    table.jsonb('smtp_settings').nullable();
 
     table.index('slug');
 
@@ -38,8 +37,4 @@ exports.up = async function (knex) {
  */
 exports.down = async function (knex) {
   await knex.schema.dropTable(ORGANIZATIONS_TABLE);
-};
-
-exports.config = {
-  transaction: false,
 };

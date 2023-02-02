@@ -1,7 +1,14 @@
-import { RFC7808Error } from './rfc7808.error';
+import { RFC7807Error, RFC7807Response } from './rfc7807.error';
 
-export class DBInsertError extends RFC7808Error {
-  constructor(entity: string) {
-    super(`An error occured while inserting an entity of type ${entity}`);
+export class DBInsertError extends RFC7807Error {
+  constructor(public entity: string) {
+    super(DBInsertError.name);
+  }
+
+  serialize(safeError: boolean): RFC7807Response {
+    return {
+      ...super.serialize(safeError),
+      entity: this.entity,
+    };
   }
 }

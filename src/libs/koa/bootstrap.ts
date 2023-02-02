@@ -3,14 +3,16 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import koaLogsMiddleware from 'koa-pino-logger';
 import { onShutdown } from 'node-graceful-shutdown';
-import { appConfig, AppConfig } from '../../config';
-import { createDebugRouter } from '../../debug/debug.controller';
+import { appConfig } from '../../config';
 import { createOrganizationController } from '../../organizations/controllers/organization.controller';
 import { getLogger } from '../pino/bootstrap';
+import { errorHandler } from './errors/error-handler.middleware';
 
 const logger = getLogger('koa');
 
 let koaApp: Koa | undefined = undefined;
+
+const routers = [createOrganizationController()];
 
 export function getKoa() {
   if (!koaApp) {
@@ -21,8 +23,6 @@ export function getKoa() {
 }
 
 function registerControllers(rootRouter: Router) {
-  const routers = [createOrganizationController()];
-
   routers.forEach((router) => {
     rootRouter.use(router.routes(), router.allowedMethods());
   });
@@ -31,6 +31,8 @@ function registerControllers(rootRouter: Router) {
 function initKoa() {
   const app = new Koa();
   const router = new Router();
+
+  app.use(errorHandler(appConfig.koa));
 
   app.use(bodyParser());
 

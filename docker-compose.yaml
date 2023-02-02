@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   cockroachdb:
-    image: cockroachdb/cockroach:v21.2.10
+    image: cockroachdb/cockroach:v22.2.3
     volumes:
       - COCKROACH_DATA:/cockroach/cockroach-data
     ports:
@@ -12,7 +12,7 @@ services:
       - --insecure
 
   cockroach-init:
-    image: cockroachdb/cockroach:v21.2.10
+    image: cockroachdb/cockroach:v22.2.3
     depends_on:
       - cockroachdb
     volumes:
@@ -37,6 +37,7 @@ services:
       - run
       - dev
     environment:
-      - ENCRYPTION_KEY=db5269ea782af1896a4d0b05f9ff7ab66143c7b9583aa0b7de725b8362c8cfcd
+      - SAFE_ERRORS=false
+      - NODE_ENV=compose
 volumes:
   COCKROACH_DATA:
