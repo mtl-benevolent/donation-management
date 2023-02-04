@@ -1,5 +1,6 @@
 import { Clock } from '../clock/clock';
-import { GetUserIdFn } from '../context/get-current-user-id';
+import { GetContextValueFn } from '../context/create-context';
+import { UserInfo } from '../context/user-info';
 import {
   ArchiveTraceable,
   CreateTraceable,
@@ -45,23 +46,23 @@ export const traceableDBMappers = {
 export const traceableInjectors = {
   injectCreateFields: (
     clock: Clock,
-    getUserId: GetUserIdFn
+    getUserInfo: GetContextValueFn<UserInfo>
   ): CreateTraceableDBEntity => ({
     created_at: clock.now(),
-    created_by: getUserId(),
+    created_by: getUserInfo()?.id ?? 'UNKNOWN',
   }),
   injectUpdateFields: (
     clock: Clock,
-    getUserId: GetUserIdFn
+    getUserInfo: GetContextValueFn<UserInfo>
   ): UpdateTraceableDBEntity => ({
     updated_at: clock.now(),
-    updated_by: getUserId(),
+    updated_by: getUserInfo()?.id ?? 'UNKNOWN',
   }),
   injectArchiveFields: (
     clock: Clock,
-    getUserId: GetUserIdFn
+    getUserInfo: GetContextValueFn<UserInfo>
   ): ArchiveTraceableDBEntity => ({
     archived_at: clock.now(),
-    archived_by: getUserId(),
+    archived_by: getUserInfo()?.id ?? 'UNKNOWN',
   }),
 };

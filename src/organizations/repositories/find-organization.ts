@@ -1,4 +1,5 @@
 import { GetQueryBuilder } from '../../libs/knex/query-builder';
+import { contexts } from '../../system/context/context';
 import { traceDBFields } from '../../system/tracing/traceable.db-entity';
 import { sqlUtils } from '../../utils/sql/sql.utils';
 import { Organization } from '../models/organization.model';
@@ -64,6 +65,8 @@ export function makeFindOrganization(deps: Deps) {
       result,
       'organizations'
     );
+
+    console.log('REQUEST ID', contexts.requestIdContext.getValue());
 
     return organizationDBMappers.toModel(dbEntity);
   };

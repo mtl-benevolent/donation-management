@@ -1,9 +1,7 @@
 import { GetQueryBuilder } from '../../libs/knex/query-builder';
 import { Clock } from '../../system/clock/clock';
-import {
-  getUserId,
-  GetUserIdFn,
-} from '../../system/context/get-current-user-id';
+import { GetContextValueFn } from '../../system/context/create-context';
+import { UserInfo } from '../../system/context/user-info';
 import { DBInsertError } from '../../system/errors/db-insert.error';
 import {
   ArchiveTraceableDBEntity,
@@ -24,7 +22,7 @@ import {
 type Deps = {
   getQueryBuilder: GetQueryBuilder<OrganizationDBEntity>;
   clock: Clock;
-  getUserId: GetUserIdFn;
+  getUserInfo: GetContextValueFn<UserInfo>;
 };
 
 export type InsertOrganization = Omit<
@@ -48,7 +46,7 @@ export function makeInsertOrganization(deps: Deps) {
       locales: {
         locales: Array.from(model.locales),
       },
-      ...traceableInjectors.injectCreateFields(deps.clock, getUserId),
+      ...traceableInjectors.injectCreateFields(deps.clock, deps.getUserInfo),
     };
 
     const qb = deps.getQueryBuilder();

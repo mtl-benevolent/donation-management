@@ -1,5 +1,7 @@
-import { getUserId } from './get-current-user-id';
+import { createContext } from './create-context';
+import { UserInfo } from './user-info';
 
-export const context = {
-  getUserId,
+export const contexts = {
+  userInfo: createContext<UserInfo>(),
+  requestIdContext: createContext<string>(),
 };

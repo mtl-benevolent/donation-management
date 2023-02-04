@@ -7,6 +7,7 @@ import { appConfig } from '../../config';
 import { createOrganizationController } from '../../organizations/controllers/organization.controller';
 import { getLogger } from '../pino/bootstrap';
 import { errorHandler } from './errors/error-handler.middleware';
+import { requestId } from './request-id/request-id.middleware';
 
 const logger = getLogger('koa');
 
@@ -32,6 +33,7 @@ function initKoa() {
   const app = new Koa();
   const router = new Router();
 
+  app.use(requestId);
   app.use(errorHandler(appConfig.koa));
 
   app.use(bodyParser());

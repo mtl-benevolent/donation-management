@@ -1,7 +1,7 @@
 import { getKnex } from '../../libs/knex/bootstrap';
 import { GetQueryBuilder } from '../../libs/knex/query-builder';
 import { clock } from '../../system/clock/clock';
-import { getUserId } from '../../system/context/get-current-user-id';
+import { contexts } from '../../system/context/context';
 import { OrganizationDBEntity } from './db-entities/organization.db-entity';
 import { makeFindOrganization } from './find-organization';
 import { makeInsertOrganization } from './insert-organization';
@@ -16,7 +16,7 @@ export const organizationRepository = {
   }),
   insertOrganization: makeInsertOrganization({
     clock,
-    getUserId,
+    getUserInfo: contexts.userInfo.getValue,
     getQueryBuilder,
   }),
 };
