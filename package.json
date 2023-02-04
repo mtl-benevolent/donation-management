@@ -17,8 +17,9 @@
     "stop:docker": "docker-compose down",
     "test": "vitest run --coverage",
     "test:dev": "vitest watch",
-    "db:latest": "knex migrate:latest",
-    "db:rollback": "knex migrate:rollback"
+    "migrate:latest": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:make": "knex migrate:make --esm"
   },
   "repository": {
     "type": "git",

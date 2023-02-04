@@ -131,37 +131,35 @@ Recurring donations record donations made throughout the year. Only once the fis
   class donations {
     <<create, update, archive>>
     id: uuid [pk]
-    organizationId: uuid
+    external_id: varchar | null
+    organization_id: uuid
     environment: Environment
     ---
     fiscal_year: smallint
     reason: varchar | null
     type: DonationType
     currency: varchar3
+    source: DonationSource
     ---
     donor_first_name: varchar | null
     donor_last_name_or_org_name: varchar
-    donor_email: varchar320
+    donor_email: varchar | null
     donor_address: jsonb~Address~ | null
     ---
-    entries: jsonb~DonationEntries~
+    should_emit_receipt: boolean
+    should_email_receipt: boolean
+    receipt_status: ReceiptStatus | null
     ---
-    receipts: jsonb~DonationReceipts~
-    receipt_status: ReceiptStatus | null;
-    ---
-    correspondences: jsonb~DonationCorrespondences~
-    ---
-    comments: jsonb~DonationComments~
 
     ix(organization_id, environment)
-    fk_organizations(organizations.id, organization_id, CASCADE)
+    fk_organizations(organization_id => organizations.id, RESTRICT)
   }
 
   donations "*" -- "1" organizations
 
   class DonationType {
     <<enumeration>>
-    one-time,
+    oneTime,
     recurrent
   }
 
@@ -175,6 +173,108 @@ Recurring donations record donations made throughout the year. Only once the fis
   }
 
   ReceiptStatus -- donations
+
+  class DonationSource {
+    <<enumeration>>
+    paypal,
+    cheque,
+    directDeposit,
+    stocks,
+    other
+  }
+
+  DonationSource -- donations
+
+  class donation_entries {
+    <<create, archive>>
+    id: uuid [pk]
+    external_id: varchar | null;
+    donation_id: uuid [fk]
+    amount: bigint
+    receipt_amount: bigint
+
+    received_at: timestampz
+
+    fk(donation_id => donations.id, CASCADE)
+  }
+
+  donations "1" -- "1...*" donation_entries
+
+  class donation_receipts {
+    <<create, archive>>
+    id: uuid [pk]
+    donation_id: uuid [fk]
+    type: ReceiptType
+    revision: smallint | null
+
+    file_uri: text | null
+
+    fk(donation_id => donations.id, CASCADE)
+  }
+
+  donations "1" -- "0...*" donation_receipts
+
+  donation_receipts -- ReceiptType
+
+  class ReceiptType {
+    <<enumeration>>
+    original,
+    revision
+  }
+
+  class correspondences {
+    <<create>>
+    id: uuid [pk]
+    donation_id: uuid [fk]
+    type: CorrespondenceType
+    status: CorrespondenceStatus
+
+    sent_to: varchar
+    sent_at: timestampz
+
+    fk(donation_id => donations.id, CASCADE)
+  }
+
+  correspondences "0...*" -- "1" donations
+
+  class CorrespondenceType {
+    <<enumeration>>
+    noAddressReminder,
+    receipt
+  }
+
+  CorrespondenceType -- correspondences
+
+  class CorrespondenceStatus {
+    <<enumeration>>
+    inProgress,
+    done,
+    error
+  }
+
+  CorrespondenceStatus -- correspondences
+
+  class correspondences_attached_receipts {
+    correspondence_id: uuid [fk]
+    receipt_id: uuid [fk]
+
+    fk(correspondence_id => correspondences.id, CASCADE)
+    fk(receipt_id => receipts.id, CASCADE)
+  }
+
+  correspondences "*" -- "*" correspondences_attached_receipts
+  donation_receipts "*" -- "*" correspondences_attached_receipts
+
+  class donation_comments {
+    <<create, archive>>
+    id: uuid [pk]
+    donation_id: uuid [fk]
+
+    comment: text
+    author: varchar
+  }
+
+  donations "1" -- "0...*" donation_comments
 ```
 
 ### JSON Objects
@@ -188,83 +288,4 @@ type Address = {
   state: string | null;
   country: string;
 };
-
-// DonationEntries
-enum DonationSource {
-  paypal,
-  check,
-  directDeposit,
-  stocks,
-  other,
-}
-
-type DonationEntry = {
-  id: string;
-  fractionalAmount: number;
-  fractionalReceiptAmount: number;
-
-  receivedAt: Date;
-
-  source: DonationSource;
-  sourceDetails: PaypalPayment | null;
-} & CreateEntity &
-  ArchiveEntity;
-
-type DonationEntries = {
-  entries: DonationEntry[];
-};
-
-// Receipts
-enum ReceiptType = {
-  original,
-  revised,
-}
-
-type Receipt = {
-  id: string;
-  type: ReceiptType;
-
-  fileUri: string | null;
-} & CreateEntity & ArchiveEntity;
-
-type DonationReceipts = {
-  receipts: Receipt[]
-}
-
-// Correspondences
-enum CorrespondenceStatus = {
-  inProgress,
-  done,
-  error,
-}
-
-enum CorrespondenceType = {
-  noAddressReminder,
-  receipt,
-}
-
-type Correspondence = {
-  id: string;
-  type: CorrespondenceType;
-  status: CorrespondenceStatus;
-
-  sentTo: string;
-  sentAt: Date;
-
-  attachedDocumentIds: string[];
-
-} & CreateEntity & ArchiveEntity;
-
-type DonationCorrespondences = {
-  correspondences: Correspondence[];
-}
-
-// Comments
-type Comment = {
-  comment: string;
-} & CreateEntity & UpdateEntity & ArchiveEntity;
-
-type DonationComments = {
-  comments: Comment[];
-}
 ```

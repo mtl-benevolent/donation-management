@@ -3,6 +3,7 @@ const {
   addUpdateTrace,
   addArchiveTrace,
 } = require('./utils/tracing');
+const { getGenUUID } = require('./utils/uuid');
 
 const ORGANIZATIONS_TABLE = 'organizations';
 
@@ -12,11 +13,7 @@ const ORGANIZATIONS_TABLE = 'organizations';
  */
 exports.up = async function (knex) {
   await knex.schema.createTable(ORGANIZATIONS_TABLE, (table) => {
-    table
-      .uuid('id')
-      .primary()
-      .notNullable()
-      .defaultTo(knex.raw('gen_random_uuid()'));
+    table.uuid('id').primary().notNullable().defaultTo(getGenUUID(knex));
     table.string('name').notNullable();
     table.string('slug').notNullable().unique();
     table.string('logo_url').nullable();
