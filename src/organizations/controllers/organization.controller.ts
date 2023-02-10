@@ -1,4 +1,5 @@
 import Router from '@koa/router';
+import { unitOfWork } from '../../libs/koa/unit-of-work/unit-of-work.middleware';
 import {
   validateBody,
   validateParam,
@@ -35,10 +36,9 @@ export function createOrganizationController(): Router {
     '/',
     validateBody(organizationContracts.requests.create),
     validateResponse(organizationContracts.responses.organizationDTO),
+    unitOfWork(),
     async (ctx) => {
       const request = ctx.request.body as CreateOrganizationRequest;
-
-      console.log('REQUEST', request);
 
       const created = await organizationService.create({
         name: request.name,
