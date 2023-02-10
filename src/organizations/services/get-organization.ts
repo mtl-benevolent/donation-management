@@ -1,12 +1,12 @@
 import { EntityNotFoundError } from '../../system/errors/entity-not-found.error';
 import { Organization } from '../models/organization.model';
 import {
-  FindOrganizationFn,
-  FindOrganizationParams,
-} from '../repositories/find-organization';
+  FindOneOrganizationFn,
+  FindOneOrganizationParams,
+} from '../repositories/methods/find-one-organization';
 
 type Deps = {
-  findOrganization: FindOrganizationFn;
+  findOrganization: FindOneOrganizationFn;
 };
 
 export type GetOrganizationParams =
@@ -17,7 +17,7 @@ export function makeGetOrganization(deps: Deps) {
   return async function getOrganization(
     params: GetOrganizationParams
   ): Promise<Organization> {
-    const findParams: FindOrganizationParams = {
+    const findParams: FindOneOrganizationParams = {
       includeArchived: false,
       oneOf: {},
     };

@@ -13,7 +13,7 @@ const DONATION_ENTRY_TABLE = 'donation_entries';
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
-  await knex.schema.createTable('donations', (table) => {
+  await knex.schema.createTable(DONATIONS_TABLE, (table) => {
     table.uuid('id').primary().notNullable().defaultTo(getGenUUID(knex));
     table
       .uuid('organization_id')
@@ -38,8 +38,8 @@ exports.up = async function (knex) {
     table.text('donor_email').nullable();
     table.jsonb('donor_address').nullable();
 
-    table.boolean('should_emit_receipt');
-    table.boolean('should_email_receipt');
+    table.boolean('options_emit_receipt').notNullable();
+    table.boolean('options_email_receipt').notNullable();
 
     table.index(['organization_id', 'environment']);
 

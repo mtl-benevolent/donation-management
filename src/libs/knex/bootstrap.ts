@@ -1,6 +1,6 @@
 import { Knex, knex } from 'knex';
 import { onShutdown } from 'node-graceful-shutdown';
-import { BaseLogger, LogFn, Logger } from 'pino';
+import { LogFn } from 'pino';
 import { appConfig, AppConfig } from '../../config';
 import { getLogger } from '../pino/bootstrap';
 
@@ -46,12 +46,16 @@ function initKnex(dbConfig: AppConfig['knex']) {
   return knexInstance;
 }
 
-export function bootstrapKnex() {
+export function bootstrapKnex(): Knex {
+  if (knexInstance) {
+    return knexInstance;
+  }
+
   knexInstance = initKnex(appConfig.knex);
 
   onShutdown('knex', ['koa'], async () => {
     await knexInstance?.destroy();
   });
 
-  return knexInstance();
+  return knexInstance;
 }

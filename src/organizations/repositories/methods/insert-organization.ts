@@ -1,23 +1,23 @@
-import { GetQueryBuilder } from '../../libs/knex/query-builder';
-import { Clock } from '../../system/clock/clock';
-import { GetContextValueFn } from '../../system/context/create-context';
-import { UserInfo } from '../../system/context/user-info';
-import { DBInsertError } from '../../system/errors/db-insert.error';
+import { GetQueryBuilder } from '../../../libs/knex/query-builder';
+import { Clock } from '../../../system/clock/clock';
+import { GetContextValueFn } from '../../../system/context/create-context';
+import { UserInfo } from '../../../system/context/user-info';
+import { DBInsertError } from '../../../system/errors/db-insert.error';
 import {
   ArchiveTraceableDBEntity,
   traceableInjectors,
   UpdateTraceableDBEntity,
-} from '../../system/tracing/traceable.db-entity';
+} from '../../../system/tracing/traceable.db-entity';
 import {
   ArchiveTraceable,
   CreateTraceable,
   UpdateTraceable,
-} from '../../system/tracing/traceable.model';
-import { Organization } from '../models/organization.model';
+} from '../../../system/tracing/traceable.model';
+import { Organization } from '../../models/organization.model';
 import {
   OrganizationDBEntity,
-  organizationDBMappers,
-} from './db-entities/organization.db-entity';
+  OrganizationDBMappers,
+} from '../db-entities/organization.db-entity';
 
 type Deps = {
   getQueryBuilder: GetQueryBuilder<OrganizationDBEntity>;
@@ -49,14 +49,14 @@ export function makeInsertOrganization(deps: Deps) {
       ...traceableInjectors.injectCreateFields(deps.clock, deps.getUserInfo),
     };
 
-    const qb = deps.getQueryBuilder();
+    const qb = await deps.getQueryBuilder();
 
-    const rows = await qb.insert(toInsert).returning('*');
+    const rows = await qb().insert(toInsert).returning('*');
 
     if (rows.length === 0) {
       throw new DBInsertError('Organization');
     }
 
-    return organizationDBMappers.toModel(rows[0]);
+    return OrganizationDBMappers.toModel(rows[0]);
   };
 }

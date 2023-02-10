@@ -18,7 +18,7 @@ export type OrganizationDBEntity = {
   UpdateTraceableDBEntity &
   ArchiveTraceableDBEntity;
 
-export const organizationDBMappers = {
+export const OrganizationDBMappers = {
   toModel: (dbEntity: OrganizationDBEntity): Organization => ({
     id: dbEntity.id,
     name: dbEntity.name,

@@ -2,7 +2,7 @@ import { Organization } from '../models/organization.model';
 import {
   InsertOrganization,
   InsertOrganizationFn,
-} from '../repositories/insert-organization';
+} from '../repositories/methods/insert-organization';
 
 type Deps = {
   insertOrganization: InsertOrganizationFn;

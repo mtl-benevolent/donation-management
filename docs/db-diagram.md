@@ -146,8 +146,8 @@ Recurring donations record donations made throughout the year. Only once the fis
     donor_email: varchar | null
     donor_address: jsonb~Address~ | null
     ---
-    should_emit_receipt: boolean
-    should_email_receipt: boolean
+    options_emit_receipt: boolean
+    options_email_receipt: boolean
     receipt_status: ReceiptStatus | null
     ---
 

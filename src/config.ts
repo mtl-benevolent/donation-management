@@ -1,7 +1,7 @@
 import {
   AppEnvironment,
   appEnvironments,
-} from './system/environments/app-environments.enum';
+} from './system/app-environments/app-environments.enum';
 import { safelyParseEnum } from './utils/enums/enums.utils';
 import { safelyParseInteger } from './utils/numbers/numbers.utils';
 
