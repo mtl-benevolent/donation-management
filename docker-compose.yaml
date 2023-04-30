@@ -1,43 +1,71 @@
 version: '3.8'
 services:
-  cockroachdb:
-    image: cockroachdb/cockroach:v22.2.3
+  roach1:
+    image: cockroachdb/cockroach:v22.2.8
+    container_name: roach1
+    hostname: roach1
+    networks:
+      - roachnet
     volumes:
-      - COCKROACH_DATA:/cockroach/cockroach-data
+      - ROACH1_DATA:/cockroach/cockroach-data
     ports:
       - 26257:26257
       - 8080:8080
     command:
-      - start-single-node
+      - start
+      - --join=roach1,roach2
+      - --cluster-name=donation_mgmt
+      - --insecure
+  
+  roach2:
+    image: cockroachdb/cockroach:v22.2.8
+    container_name: roach2
+    hostname: roach2
+    networks:
+      - roachnet
+    volumes:
+      - ROACH2_DATA:/cockroach/cockroach-data
+    command:
+      - start
+      - --join=roach1,roach2
+      - --cluster-name=donation_mgmt
       - --insecure
 
   cockroach-init:
-    image: cockroachdb/cockroach:v22.2.3
+    image: cockroachdb/cockroach:v22.2.8
     depends_on:
-      - cockroachdb
+      - roach1
+      - roach2
     volumes:
-      - ./db-dev-init:/db-init
+      - ./db-dev-init:/db-init/
     environment:
-      - COCKROACH_HOST=cockroachdb
+      - COCKROACH_HOST=roach1
       - COCKROACH_PORT=26257
       - COCKROACH_USER=root
       - COCKROACH_INSECURE=true
     entrypoint: /db-init/init.sh
+    # entrypoint: ls -a /db-init
 
-  donation-management:
-    build: .
-    depends_on:
-      - cockroachdb
-    volumes:
-      - .:/app
-    ports:
-      - '8300:8300'
-    command:
-      - npm
-      - run
-      - dev
-    environment:
-      - SAFE_ERRORS=false
-      - NODE_ENV=compose
+  # donation-management:
+  #   build: .
+  #   depends_on:
+  #     - roach1
+  #     - roach2
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - '8300:8300'
+  #   command:
+  #     - npm
+  #     - run
+  #     - dev
+  #   environment:
+  #     - SAFE_ERRORS=false
+  #     - NODE_ENV=compose
 volumes:
-  COCKROACH_DATA:
+  ROACH1_DATA:
+  ROACH2_DATA:
+
+networks:
+  backend: {}
+  roachnet: {}

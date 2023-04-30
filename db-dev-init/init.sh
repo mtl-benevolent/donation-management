@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 connected=false
 
 until $connected
@@ -12,6 +12,8 @@ do
     sleep 5;
   fi
 done
+
+cockroach init --cluster-name=donation_mgmt
 
 cockroach sql -f /db-init/create-db.sql --echo-sql
 

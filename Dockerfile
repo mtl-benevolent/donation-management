@@ -1,11 +1,11 @@
-FROM node:18.13-bullseye-slim AS deps
+FROM node:18.16-bullseye-slim AS deps
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:18.13-bullseye-slim AS builder
+FROM node:18.16-bullseye-slim AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:18.13-bullseye-slim AS runner
+FROM node:18.16-bullseye-slim AS runner
 
 WORKDIR /chrome
 

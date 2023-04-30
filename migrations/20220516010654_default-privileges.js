@@ -3,9 +3,12 @@
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
-  await knex.raw(
-    'alter default privileges grant select, insert, update, delete on tables to "donations_rw"'
+  await knex.schema.raw(
+    'alter default privileges grant select, insert, update, delete on tables, sequences to "donations_rw"'
   );
+
+  // Grant drop permission to enable TRUNCATE to work
+  await knex.schema.raw('alter default privileges grant drop on tables, sequences to "donations_maintenance"')
 };
 
 /**
