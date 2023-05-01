@@ -1,8 +1,7 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "suppressImplicitAnyIndexErrors": true,
     "sourceMap": true
   },
   "include": ["src"],

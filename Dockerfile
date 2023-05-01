@@ -1,5 +1,7 @@
 FROM node:18.16-bullseye-slim AS deps
 
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -17,8 +19,6 @@ RUN npm run build
 FROM node:18.16-bullseye-slim AS runner
 
 WORKDIR /chrome
-
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer

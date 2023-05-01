@@ -2,70 +2,33 @@ version: '3.8'
 services:
   roach1:
     image: cockroachdb/cockroach:v22.2.8
-    container_name: roach1
-    hostname: roach1
-    networks:
-      - roachnet
     volumes:
       - ROACH1_DATA:/cockroach/cockroach-data
+      - ./db-dev-init/:/docker-entrypoint-initdb.d
     ports:
       - 26257:26257
       - 8080:8080
     command:
-      - start
-      - --join=roach1,roach2
-      - --cluster-name=donation_mgmt
-      - --insecure
-  
-  roach2:
-    image: cockroachdb/cockroach:v22.2.8
-    container_name: roach2
-    hostname: roach2
-    networks:
-      - roachnet
-    volumes:
-      - ROACH2_DATA:/cockroach/cockroach-data
-    command:
-      - start
-      - --join=roach1,roach2
-      - --cluster-name=donation_mgmt
+      - start-single-node
       - --insecure
 
-  cockroach-init:
-    image: cockroachdb/cockroach:v22.2.8
+  donation-management:
+    build:
+      context: .
+      dockerfile: compose.Dockerfile
+      target: builder
     depends_on:
       - roach1
-      - roach2
     volumes:
-      - ./db-dev-init:/db-init/
+      - .:/home/pptruser/app
+    ports:
+      - '8300:8300'
+    command:
+      - "no-watch"
     environment:
-      - COCKROACH_HOST=roach1
-      - COCKROACH_PORT=26257
-      - COCKROACH_USER=root
-      - COCKROACH_INSECURE=true
-    entrypoint: /db-init/init.sh
-    # entrypoint: ls -a /db-init
+      - NODE_ENV=compose
+    cap_add:
+      - "SYS_ADMIN" # Required for puppeteer
 
-  # donation-management:
-  #   build: .
-  #   depends_on:
-  #     - roach1
-  #     - roach2
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - '8300:8300'
-  #   command:
-  #     - npm
-  #     - run
-  #     - dev
-  #   environment:
-  #     - SAFE_ERRORS=false
-  #     - NODE_ENV=compose
 volumes:
   ROACH1_DATA:
-  ROACH2_DATA:
-
-networks:
-  backend: {}
-  roachnet: {}

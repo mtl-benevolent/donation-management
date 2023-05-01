@@ -18,6 +18,7 @@ GRANT CREATE ON SCHEMA donationsdb.donations TO donations_migrators;
 -- Setting up donations_maintenance role
 GRANT donations_rw TO donations_maintenance;
 GRANT CREATE ON DATABASE donationsdb TO donations_maintenance;
+GRANT SYSTEM VIEWACTIVITY, VIEWCLUSTERMETADATA TO donations_maintenance;
 
 -- Creating application user
 CREATE USER IF NOT EXISTS donation_mgmt_app LOGIN PASSWORD NULL;
@@ -26,3 +27,7 @@ GRANT donations_rw TO donation_mgmt_app;
 -- Creating migration user
 CREATE USER IF NOT EXISTS donation_mgmt_migrator LOGIN PASSWORD NULL;
 GRANT donations_migrators TO donation_mgmt_migrator;
+
+-- Creating maintenance user
+CREATE USER IF NOT EXISTS donation_mgmt_maintenance LOGIN PASSWORD NULL;
+GRANT donations_maintenance TO donation_mgmt_maintenance;

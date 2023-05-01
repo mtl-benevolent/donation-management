@@ -40,7 +40,7 @@ function initKoa() {
 
   app.use(
     koaLogsMiddleware({
-      logger,
+      logger: logger as any,
       redact: [
         'req.remoteAddress',
         'req.remotePort',
@@ -76,7 +76,7 @@ export function bootstrapKoa() {
       return Promise.resolve();
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       server.close((maybeErr) => {
         if (maybeErr) {
           reject(maybeErr);
