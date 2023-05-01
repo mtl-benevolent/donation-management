@@ -1,9 +1,9 @@
-import { Knex } from 'knex';
-import { contexts } from '../../system/context/context';
+import { contexts } from '@/system/context/context';
 import {
   makeUnitOfWorkContext,
   UnitOfWorkContext,
-} from '../../system/context/unit-of-work-context';
+} from '@/system/context/unit-of-work-context';
+import { Knex } from 'knex';
 import { getLogger } from '../pino/bootstrap';
 
 const logger = getLogger('unit-of-work');

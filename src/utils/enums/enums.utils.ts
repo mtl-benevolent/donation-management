@@ -17,7 +17,7 @@ export function parseEnum<T extends string>(
     );
   }
 
-  const parsedValue = enumValues[value];
+  const parsedValue = (enumValues as any)[value];
 
   if (!parsedValue) {
     throw new Error(
@@ -39,7 +39,7 @@ export function safelyParseEnum<T extends string>(
     return fallbackValue;
   }
 
-  const parsedValue = enumValues[value];
+  const parsedValue = (enumValues as any)[value];
 
   if (!parsedValue) {
     return fallbackValue;

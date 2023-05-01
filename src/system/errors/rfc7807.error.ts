@@ -1,11 +1,11 @@
-import { STATUS_CODES } from 'http';
+import { STATUS_CODES } from 'node:http';
 
 export type RFC7807Response = {
   type?: string;
   title: string;
   detail: string;
   status: number;
-  stack?: string;
+  stack?: string[];
 } & { [key: string]: any };
 
 /**
@@ -24,7 +24,7 @@ export abstract class RFC7807Error extends Error {
       status: this.status,
       title: this.getTitle(this.status),
       detail: this.message,
-      stack: safeError ? undefined : this.stack,
+      stack: safeError ? undefined : (this.stack || '').split('\n'),
     };
   }
 

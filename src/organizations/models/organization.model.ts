@@ -2,7 +2,7 @@ import {
   ArchiveTraceable,
   CreateTraceable,
   UpdateTraceable,
-} from '../../system/tracing/traceable.model';
+} from '@/system/tracing/traceable.model';
 
 export type Organization = {
   id: string;

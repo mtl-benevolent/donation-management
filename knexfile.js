@@ -22,7 +22,7 @@ module.exports = {
       disableTransactions: true,
     },
     connection: {
-      host: 'cockroachdb',
+      host: 'roach1',
       port: 26257,
       user: 'donation_mgmt_migrator',
       password: null,

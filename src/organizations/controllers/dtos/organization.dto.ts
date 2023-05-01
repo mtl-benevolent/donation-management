@@ -1,10 +1,10 @@
-import Joi from 'joi';
+import { Organization } from '@/organizations/models/organization.model';
 import {
   CreateTraceableDTO,
   UpdateTraceableDTO,
-} from '../../../system/tracing/traceable.dto';
-import { standardSchema } from '../../../system/validation/standard-validation';
-import { Organization } from '../../models/organization.model';
+} from '@/system/tracing/traceable.dto';
+import { standardSchema } from '@/system/validation/standard-validation';
+import Joi from 'joi';
 
 export type OrganizationDTO = {
   id: string;

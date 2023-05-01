@@ -1,18 +1,18 @@
-import { GetQueryBuilder } from '../../../libs/knex/query-builder';
-import { Clock } from '../../../system/clock/clock';
-import { GetContextValueFn } from '../../../system/context/create-context';
-import { UserInfo } from '../../../system/context/user-info';
-import { DBInsertError } from '../../../system/errors/db-insert.error';
+import { GetQueryBuilder } from '@/libs/knex/query-builder';
+import { Clock } from '@/system/clock/clock';
+import { GetContextValueFn } from '@/system/context/create-context';
+import { UserInfo } from '@/system/context/user-info';
+import { DBInsertError } from '@/system/errors/db-insert.error';
 import {
   ArchiveTraceableDBEntity,
   traceableInjectors,
   UpdateTraceableDBEntity,
-} from '../../../system/tracing/traceable.db-entity';
+} from '@/system/tracing/traceable.db-entity';
 import {
   ArchiveTraceable,
   CreateTraceable,
   UpdateTraceable,
-} from '../../../system/tracing/traceable.model';
+} from '@/system/tracing/traceable.model';
 import { Organization } from '../../models/organization.model';
 import {
   OrganizationDBEntity,

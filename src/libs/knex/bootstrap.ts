@@ -1,7 +1,7 @@
+import { AppConfig, appConfig } from '@/config';
 import { Knex, knex } from 'knex';
 import { onShutdown } from 'node-graceful-shutdown';
 import { LogFn } from 'pino';
-import { appConfig, AppConfig } from '../../config';
 import { getLogger } from '../pino/bootstrap';
 
 const logger = getLogger('knex');
@@ -18,7 +18,7 @@ export function getKnex(): Knex {
 
 function makeLogger(severity: string) {
   return function knexLogger(message: any): void {
-    (logger[severity] as LogFn)(message, 'Executed SQL Query');
+    ((logger as any)[severity] as LogFn)(message, 'Executed SQL Query');
   };
 }
 

@@ -1,10 +1,10 @@
+import { appConfig } from '@/config';
+import { createOrganizationController } from '@/organizations/controllers/organization.controller';
 import Router from '@koa/router';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import koaLogsMiddleware from 'koa-pino-logger';
 import { onShutdown } from 'node-graceful-shutdown';
-import { appConfig } from '../../config';
-import { createOrganizationController } from '../../organizations/controllers/organization.controller';
 import { getLogger } from '../pino/bootstrap';
 import { errorHandler } from './errors/error-handler.middleware';
 import { requestId } from './request-id/request-id.middleware';
@@ -40,7 +40,7 @@ function initKoa() {
 
   app.use(
     koaLogsMiddleware({
-      logger,
+      logger: logger as any,
       redact: [
         'req.remoteAddress',
         'req.remotePort',
@@ -76,7 +76,7 @@ export function bootstrapKoa() {
       return Promise.resolve();
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       server.close((maybeErr) => {
         if (maybeErr) {
           reject(maybeErr);
