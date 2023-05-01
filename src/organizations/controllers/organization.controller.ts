@@ -1,10 +1,10 @@
-import Router from '@koa/router';
-import { unitOfWork } from '../../libs/koa/unit-of-work/unit-of-work.middleware';
+import { unitOfWork } from '@/libs/koa/unit-of-work/unit-of-work.middleware';
 import {
   validateBody,
   validateParam,
   validateResponse,
-} from '../../libs/koa/validation/validate.middleware';
+} from '@/libs/koa/validation/validate.middleware';
+import Router from '@koa/router';
 import { organizationService } from '../services/organization.service';
 import { organizationDTOMappers } from './dtos/organization.dto';
 import {

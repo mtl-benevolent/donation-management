@@ -1,4 +1,4 @@
-import { EntityNotFoundError } from '../../system/errors/entity-not-found.error';
+import { EntityNotFoundError } from '@/system/errors/entity-not-found.error';
 import { Organization } from '../models/organization.model';
 import {
   FindOneOrganizationFn,

@@ -1,7 +1,7 @@
+import { AppConfig, appConfig } from '@/config';
 import { Knex, knex } from 'knex';
 import { onShutdown } from 'node-graceful-shutdown';
 import { LogFn } from 'pino';
-import { AppConfig, appConfig } from '../../config';
 import { getLogger } from '../pino/bootstrap';
 
 const logger = getLogger('knex');

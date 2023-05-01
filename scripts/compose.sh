@@ -6,5 +6,4 @@ pg_isready --dbname="donationsdb" --host="roach1" --port=26257 --username="donat
 echo "Database is ready to go. Applying migrations"
 npm run migrate:latest
 
-npm run build
-npm run start:debug
+npm run dev

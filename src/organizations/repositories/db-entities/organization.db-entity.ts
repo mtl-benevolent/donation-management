@@ -3,7 +3,7 @@ import {
   CreateTraceableDBEntity,
   traceableDBMappers,
   UpdateTraceableDBEntity,
-} from '../../../system/tracing/traceable.db-entity';
+} from '@/system/tracing/traceable.db-entity';
 import { Organization } from '../../models/organization.model';
 
 export type OrganizationDBEntity = {

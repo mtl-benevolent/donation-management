@@ -20,15 +20,13 @@ services:
     depends_on:
       - roach1
     volumes:
-      - .:/home/pptruser/app
+      - .:/app
     ports:
       - '8300:8300'
-    command:
-      - "no-watch"
+      - '18300:18300'
     environment:
+      - SAFE_ERRORS=false
       - NODE_ENV=compose
-    cap_add:
-      - "SYS_ADMIN" # Required for puppeteer
 
 volumes:
   ROACH1_DATA:

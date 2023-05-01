@@ -1,8 +1,8 @@
+import { appConfig } from '@/config';
+import { ValidationError } from '@/system/errors/validation.error';
+import { assertValid } from '@/system/validation/validate';
 import Joi from 'joi';
 import { Middleware } from 'koa';
-import { appConfig } from '../../../config';
-import { ValidationError } from '../../../system/errors/validation.error';
-import { assertValid } from '../../../system/validation/validate';
 
 export const validateBody = (schema: Joi.Schema): Middleware => {
   return async (ctx, next) => {

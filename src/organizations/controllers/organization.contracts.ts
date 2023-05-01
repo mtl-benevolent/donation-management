@@ -1,5 +1,5 @@
+import { standardSchema } from '@/system/validation/standard-validation';
 import Joi from 'joi';
-import { standardSchema } from '../../system/validation/standard-validation';
 import { organizationDTOSchema } from './dtos/organization.dto';
 
 export type CreateOrganizationRequest = {

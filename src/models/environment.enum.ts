@@ -1,4 +1,4 @@
-import { createEnums } from '../utils/enums/enums.utils';
+import { createEnums } from '@/utils/enums/enums.utils';
 
 export type Environment = 'sandbox' | 'live';
 

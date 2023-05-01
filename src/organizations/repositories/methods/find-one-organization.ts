@@ -1,7 +1,7 @@
+import { GetQueryBuilder } from '@/libs/knex/query-builder';
+import { DB } from '@/system/db/tables.config';
+import { traceDBFields } from '@/system/tracing/traceable.db-entity';
 import { isEmpty } from 'lodash';
-import { GetQueryBuilder } from '../../../libs/knex/query-builder';
-import { DB } from '../../../system/db/tables.config';
-import { traceDBFields } from '../../../system/tracing/traceable.db-entity';
 import { Organization } from '../../models/organization.model';
 import {
   OrganizationDBEntity,

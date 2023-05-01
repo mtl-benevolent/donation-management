@@ -28,7 +28,7 @@ export const appConfig = {
     host: process.env.DB_HOST || 'roach1',
     port: safelyParseInteger(process.env.DB_PORT, 26257),
     user: process.env.DB_USER || 'donation_mgmt_app',
-    password: process.env.DB_PASSWORD || undefined,
+    password: process.env.DB_PASSWORD || null,
     database: process.env.DB_NAME || 'donationsdb',
     schema: process.env.DB_SCHEMA || 'donations',
     debug: true,

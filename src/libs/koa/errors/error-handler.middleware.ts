@@ -1,12 +1,9 @@
+import { AppConfig } from '@/config';
+import { DBConflictError } from '@/system/errors/db-conflict.error';
+import { FallbackError } from '@/system/errors/fallback.error';
+import { InternalServerError } from '@/system/errors/internal-server.error';
+import { RFC7807Error, RFC7807Response } from '@/system/errors/rfc7807.error';
 import { Middleware } from 'koa';
-import { AppConfig } from '../../../config';
-import { DBConflictError } from '../../../system/errors/db-conflict.error';
-import { FallbackError } from '../../../system/errors/fallback.error';
-import { InternalServerError } from '../../../system/errors/internal-server.error';
-import {
-  RFC7807Error,
-  RFC7807Response,
-} from '../../../system/errors/rfc7807.error';
 
 export const errorHandler: (appConfig: AppConfig['koa']) => Middleware =
   (config) => async (ctx, next) => {

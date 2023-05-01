@@ -1,5 +1,5 @@
+import { regex } from '@/utils/text/regex.utils';
 import Joi from 'joi';
-import { regex } from '../../utils/text/regex.utils';
 
 export const standardSchema = {
   objectId: Joi.string().uuid(),

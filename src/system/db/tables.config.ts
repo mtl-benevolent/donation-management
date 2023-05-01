@@ -1,11 +1,11 @@
-import { DonationEntryDBEntity } from '../../donations/repositories/db-entities/donation-entry.db-entity';
-import { DonationDBEntity } from '../../donations/repositories/db-entities/donation.db-entity';
+import { DonationEntryDBEntity } from '@/donations/repositories/db-entities/donation-entry.db-entity';
+import { DonationDBEntity } from '@/donations/repositories/db-entities/donation.db-entity';
 import {
   GetQueryBuilder,
   makeGetQueryBuilder,
-} from '../../libs/knex/query-builder';
-import { OrganizationDBEntity } from '../../organizations/repositories/db-entities/organization.db-entity';
-import { SQLUtils } from '../../utils/sql/sql.utils';
+} from '@/libs/knex/query-builder';
+import { OrganizationDBEntity } from '@/organizations/repositories/db-entities/organization.db-entity';
+import { SQLUtils } from '@/utils/sql/sql.utils';
 
 export const DB = {
   organizations: buildDBEntityConfig<OrganizationDBEntity>('organizations'),

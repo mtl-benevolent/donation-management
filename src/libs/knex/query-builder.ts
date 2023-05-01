@@ -1,5 +1,5 @@
+import { contexts } from '@/system/context/context';
 import { Knex } from 'knex';
-import { contexts } from '../../system/context/context';
 import { getLogger } from '../pino/bootstrap';
 import { getKnex } from './bootstrap';
 

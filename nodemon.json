@@ -1,0 +1,11 @@
+{
+  "ext": "ts",
+  "signal": "SIGTERM",
+  "verbose": true,
+  "exec": "npm run start:debug",
+  "watch": ["src"],
+  "ignore": [
+    "src/**/*.spec.ts",
+    "src/**/*.api-tests.ts"
+  ]
+}
